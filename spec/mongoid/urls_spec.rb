@@ -33,9 +33,9 @@ describe Mongoid::Urls do
 
     it 'should keep old slugs' do
       article.save
-      article.title = "Hello Ruby!"
+      article.title = 'Hello Ruby!'
       article.save
-      expect(article.urls).to eq ["im-an-article", "hello-ruby"]
+      expect(article.urls).to eq ['im-an-article', 'hello-ruby']
     end
   end
 

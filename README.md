@@ -12,7 +12,7 @@ Mongoid::Urls
 Simple slugs for mongoid models!
 
 
-## Short snappy token ids for Mongoid documents
+## Nice URLs for Mongoid Documents
 
 This library is a quick and simple way to generate slugs
 for your mongoid documents.
