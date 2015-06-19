@@ -1,0 +1,23 @@
+language: ruby
+
+rvm:
+  - 1.9.3
+  - 2.1.1
+  - 2.2.2
+  - ruby-head
+  - jruby-19mode
+  - rbx-2
+
+matrix:
+  allow_failures:
+    - rvm: rbx-2
+
+gemfile:
+  - Gemfile
+
+services:
+  - mongodb
+
+env: CI="travis"
+
+script: "bundle exec rspec"
