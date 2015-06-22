@@ -36,7 +36,7 @@ end
 
 require 'support/models'
 
-Mongo::Logger.logger.level = Logger::INFO
+Mongo::Logger.logger.level = Logger::INFO if Mongoid::VERSION >= '5'
 
 RSpec.configure do |config|
   config.include Mongoid::Matchers
