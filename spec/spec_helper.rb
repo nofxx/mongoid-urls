@@ -19,7 +19,7 @@ ENV['MONGOID_ENV'] = 'test'
 db_config = {
   default: {
     database: 'mongoid_urls_test',
-    hosts: ["localhost: #{ENV['BOXEN_MONGODB_PORT'] || 27_017}"],
+    hosts: ["localhost: #{ENV['MONGODB_PORT'] || 27_017}"],
     options: {}
   }
 }
