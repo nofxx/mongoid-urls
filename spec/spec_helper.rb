@@ -1,7 +1,9 @@
 # require 'codeclimate-test-reporter'
 # CodeClimate::TestReporter.start
-require 'coveralls'
-Coveralls.wear!
+if ENV['CI']
+  require 'coveralls'
+  Coveralls.wear!
+end
 
 $LOAD_PATH << File.expand_path('../../lib', __FILE__)
 
@@ -14,15 +16,22 @@ require 'mongoid/urls'
 
 ENV['MONGOID_ENV'] = 'test'
 
+db_config = {
+  default: {
+    database: 'mongoid_urls_test',
+    hosts: ["localhost: #{ENV['BOXEN_MONGODB_PORT'] || 27_017}"],
+    options: {}
+  }
+}
+
 Mongoid.configure do |config|
   config.load_configuration(
-    clients: {
-      default: {
-        database: 'mongoid_urls_test',
-        hosts: ["localhost: #{ENV['BOXEN_MONGODB_PORT'] || 27_017}"],
-        options: {}
-      }
-    })
+    if Mongoid::VERSION >= '5'
+      { clients: db_config }
+    else
+      { sessions: db_config }
+    end
+  )
 end
 
 require 'support/models'
