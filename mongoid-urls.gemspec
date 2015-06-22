@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Marcos Piccinini']
   s.homepage    = 'http://github.com/nofxx/mongoid-urls'
-  s.licenses    = ['MIT']
   s.summary     = 'A url sanitizer (slugs) for Mongoid documents.'
   s.description = 'Mongoid Urls creates unique sanitized URLs for Mongoid documents. Simple and great for making URLs look good.'
+  s.license     = 'MIT'
 
   s.rubyforge_project = 'mongoid-urls'
   s.add_dependency 'mongoid', '> 4.0.0'
