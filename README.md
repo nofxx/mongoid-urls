@@ -21,7 +21,7 @@ Mongoid::Urls can help turn this:
 
     http://bestappever.com/video/4dcfbb3c6a4f1d4c4a000012
 
-Into something more like this:
+Into something like this:
 
     http://bestappever.com/video/kittens-playing-with-puppies
 
@@ -32,11 +32,11 @@ In your gemfile, add:
 
     gem 'mongoid-urls'
 
-In your Mongoid documents, just add `include Mongoid::Urls` and the
-`url` method will take care of all the setup, like so:
+In your Mongoid documents, just add `include Mongoid::Urls`
+and use the `url` method to setup, like so:
 
 ```ruby
-class Article
+class Video
   include Mongoid::Document
   include Mongoid::Urls
 
@@ -53,8 +53,7 @@ listed [below](#configuration).
 
 ## Finders
 
-`Mongoid::Urls` will **never** override `find`.
-There's some helpers for custom fields:
+`Mongoid::Urls` will **never** override `find`!
 
 ```ruby
 Video.find_by_url("the-nice-url")
@@ -66,12 +65,19 @@ Account.find_by_url("acc-123456")
 
 You may choose between two different systems for how your urls are stored:
 
-Default #urls
+Default to `#urls` Array.
 
-Simple #url
+Simple `#url` String.
 
 
 #### Reserved
 
+Defaults to `%w(new edit)`.
+Have in mind: It's an overwrite, not a merge.
+
 
 # Notes
+
+If you're looking for conflict resolution, check out `mongoid-slugs`.
+This gem intended to be used for manual conflict resolution (duplicates).
+Use your own logic/return duplicate error for the user.

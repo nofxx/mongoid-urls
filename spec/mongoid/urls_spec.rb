@@ -172,20 +172,17 @@ describe Mongoid::Urls do
       end
     end
 
-    context 'with other unique indexes present' do
+    context 'with other url present' do
       before(:each) do
         document_class.send(:field, :name)
-        document_class.send(:url, :name)
         document_class.send(:index, { name: 1 }, unique: true)
         document_class.create_indexes
       end
 
       context 'when violating the other index' do
         it 'should raise an operation failure' do
-          duplicate_name = 'Got Duped.'
-          document_class.create!(name: duplicate_name)
-          expect { document_class.create!(name: duplicate_name) }
-            .to raise_exception(Mongo::Error::OperationFailure)
+          expect { document_class.send(:url, :name) }
+            .to raise_exception(RuntimeError)
         end
       end
     end

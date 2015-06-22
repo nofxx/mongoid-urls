@@ -24,6 +24,7 @@ module Mongoid
       #
       def url(*args)
         options = args.extract_options!
+        fail 'One #url per model!' if url_key
         self.url_key = args.first.to_s
         self.url_simple = options[:simple]
         self.reserved_words = options[:reserve] || Set.new(%w(new edit))
@@ -51,7 +52,7 @@ module Mongoid
     end # ClassMethods
 
     def to_param
-      urls.last
+      url_simple ? url : urls.last
     end
 
     def slug
