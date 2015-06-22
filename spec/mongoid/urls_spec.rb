@@ -40,7 +40,7 @@ describe Mongoid::Urls do
   end
 
   describe '#url' do
-    describe 'default "_id"' do
+    describe 'default ":title"' do
       before(:each) { document_class.send(:url, :title) }
 
       it 'should be created' do
@@ -66,6 +66,19 @@ describe Mongoid::Urls do
       it 'should accept custom field names' do
         document_class.send(:url, :sweet)
         expect(document).to have_field(:urls)
+      end
+
+      it 'should accept simple field names' do
+        document_class.send(:url, :sweet, simple: true)
+        expect(document).to_not have_field(:urls)
+        expect(document).to have_field(:url)
+      end
+
+      it 'should create simple field to_param' do
+        document_class.send(:field, :name)
+        document_class.send(:url, :name, simple: true)
+        doc = document_class.create(name: 'nice doc')
+        expect(doc.to_param).to eq('nice-doc')
       end
 
       it 'should not create custom finders with default id' do
@@ -146,6 +159,32 @@ describe Mongoid::Urls do
     it 'should respond with last valid url' do
       document_class.send(:url, :title)
       expect(document.to_param).to eq 'im-a-document'
+    end
+  end
+
+  describe 'reserved words' do
+    before(:each) do
+    end
+    it 'should respect default new' do
+      article.title = 'new'
+      expect(article.save).to be_falsey
+      expect(article.errors).to include(:title)
+    end
+
+    it 'should respect default edit' do
+      article.title = 'edit'
+      expect(article.save).to be_falsey
+      expect(article.errors).to include(:title)
+    end
+
+    it 'should match' do
+      article.title = 'anew'
+      expect(article.save).to be_truthy
+    end
+
+    it 'should match' do
+      article.title = 'newa'
+      expect(article.save).to be_truthy
     end
   end
 
