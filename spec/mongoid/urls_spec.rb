@@ -20,18 +20,19 @@ describe Mongoid::Urls do
     Article.new(title: "I'm an Article!")
   end
 
-  describe '#slug' do
+  describe '#url' do
     before(:each) { document_class.send(:url, :title) }
     it 'should slugize a few stuff' do
-      expect(document.slug).to eq('im-a-document')
+      expect(document.url).to eq('im-a-document')
     end
 
-    it 'should update slug' do
+    it 'should update url' do
       document.title = 'I "quoted"'
-      expect(document.slug).to eq('i-quoted')
+      document.valid?
+      expect(document.url).to eq('i-quoted')
     end
 
-    it 'should keep old slugs' do
+    it 'should keep old urls' do
       article.save
       article.title = 'Hello Ruby!'
       article.save

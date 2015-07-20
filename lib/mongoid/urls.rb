@@ -32,30 +32,29 @@ module Mongoid
         before_validation :create_urls
       end
 
-      def find_by_url(u)
-        url_simple ? find_by(url: u) : find_by(urls: u)
+      def find_url(u)
+        find_by(url: u) || (!url_simple && find_by(urls: u))
       rescue Mongoid::Errors::DocumentNotFound
         nil
       end
+      alias_method :find_by_url, :find_url
 
       private
 
       def create_url_fields
-        if url_simple
-          field :url, type: String
-          index({ url: 1 }, unique: true)
-        else
-          field :urls, type: Array, default: []
-          index(urls: 1)
-        end
+        field :url, type: String
+        index({ url: 1 }, unique: true)
+        return if url_simple
+        field :urls, type: Array, default: []
+        index(urls: 1)
       end
     end # ClassMethods
 
     def to_param
-      url_simple ? url : urls.last
+      url
     end
 
-    def slug
+    def new_url
       self[url_key].to_slug.normalize.to_s
     end
 
@@ -73,9 +72,10 @@ module Mongoid
 
     def create_urls
       return unless changes.include?(url_key)
-      validate_urls(new_url = slug)
+      validate_urls(new_url)
 
-      return self.url = new_url if url_simple
+      self.url = new_url
+      return if url_simple
       urls << new_url
       urls.uniq!
     end

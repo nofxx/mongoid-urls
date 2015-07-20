@@ -57,17 +57,21 @@ listed [below](#configuration).
 
 ```ruby
 Video.find_by_url("the-nice-url")
-Account.find_by_url("acc-123456")
 ```
 
+Or just:
+
+```ruby
+Account.find_url("acc-123456")
+```
 
 ## Configuration
 
 You may choose between two different systems for how your urls are stored:
 
-Default to `#urls` Array.
+Simple: `#url` String only.
 
-Simple `#url` String.
+Default to simple + `#urls` Array for history (find when page moved).
 
 
 #### Reserved
@@ -79,5 +83,5 @@ Have in mind: It's an overwrite, not a merge.
 # Notes
 
 If you're looking for conflict resolution, check out `mongoid-slugs`.
-This gem intended to be used for manual conflict resolution (duplicates).
-Use your own logic/return duplicate error for the user.
+This gem intended to be used for manual conflict resolution (duplicates):
+Use your own logic and/or return conflict error to the user.
