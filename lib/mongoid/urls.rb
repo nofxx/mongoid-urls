@@ -44,6 +44,7 @@ module Mongoid
       def create_url_fields
         field :url, type: String
         index({ url: 1 }, unique: true)
+        validates :url, uniqueness: true
         return if url_simple
         field :urls, type: Array, default: []
         index(urls: 1)
@@ -55,23 +56,22 @@ module Mongoid
     end
 
     def new_url
-      self[url_key].to_slug.normalize.to_s
+      return unless val = send(url_key)
+      val.to_slug.normalize.to_s
     end
 
     protected
 
     def validate_urls(u)
-      if self.class.find_by_url(u)
-        errors.add(:title, :uniqueness)
-      elsif reserved_words.include?(u)
-        errors.add(:title, :reserved)
+      if reserved_words.include?(u)
+        errors.add(url_key, :reserved)
       else
         true
       end
     end
 
     def create_urls
-      return unless changes.include?(url_key)
+      # return unless changes.include?(url_key)
       validate_urls(new_url)
 
       self.url = new_url
