@@ -1,10 +1,10 @@
 Mongoid::Urls
 =============
 
-[![Gem Version](https://badge.fury.io/rb/mongoid-urls.png)](http://badge.fury.io/rb/mongoid-urls)
+[![Gem Version](https://badge.fury.io/rb/mongoid-urls.svg)](http://badge.fury.io/rb/mongoid-urls)
 [![Dependency Status](https://gemnasium.com/nofxx/mongoid-urls.svg)](https://gemnasium.com/nofxx/mongoid-urls)
-[![Build Status](https://secure.travis-ci.org/nofxx/mongoid-urls.png)](http://travis-ci.org/nofxx/mongoid-urls)
-[![Code Climate](https://codeclimate.com/github/nofxx/mongoid-urls.png)](https://codeclimate.com/github/nofxx/mongoid-urls)
+[![Build Status](https://secure.travis-ci.org/nofxx/mongoid-urls.svg)](http://travis-ci.org/nofxx/mongoid-urls)
+[![Code Climate](https://codeclimate.com/github/nofxx/mongoid-urls.svg)](https://codeclimate.com/github/nofxx/mongoid-urls)
 [![Coverage Status](https://coveralls.io/repos/nofxx/mongoid-urls/badge.svg)](https://coveralls.io/r/nofxx/mongoid-urls)
 
 ## Mongoid::Urls
