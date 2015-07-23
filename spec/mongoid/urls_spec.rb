@@ -8,6 +8,7 @@ describe Mongoid::Urls do
       include Mongoid::Document
       include Mongoid::Urls
       field :title
+      field :doc
     end
     Class.new(Document)
   end
@@ -65,12 +66,25 @@ describe Mongoid::Urls do
 
     describe 'options' do
       it 'should accept custom field names' do
-        document_class.send(:url, :sweet)
-        expect(document).to have_field(:urls)
+        document_class.send(:url, :title)
+        expect(document).to have_field(:url)
       end
 
       it 'should accept simple field names' do
-        document_class.send(:url, :sweet, simple: true)
+        document_class.send(:url, :title, simple: true)
+        expect(document).to_not have_field(:urls)
+        expect(document).to have_field(:url)
+      end
+    end
+
+    describe 'index field' do
+      it 'should accept custom field names' do
+        document_class.send(:url, :doc)
+        expect(document).to have_field(:url)
+      end
+
+      it 'should accept simple field names' do
+        document_class.send(:url, :doc, simple: true)
         expect(document).to_not have_field(:urls)
         expect(document).to have_field(:url)
       end
@@ -201,7 +215,7 @@ describe Mongoid::Urls do
         d2 = article.clone
         expect(d2).to_not be_valid
         expect(d2.save).to be_falsey
-        expect(d2.errors.messages).to include(:title)
+        expect(d2.errors.messages).to include(:url)
       end
 
       it 'should raise when collisions can\'t be resolved on create!' do

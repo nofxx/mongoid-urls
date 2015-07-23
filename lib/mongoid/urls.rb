@@ -56,7 +56,7 @@ module Mongoid
     end
 
     def new_url
-      return unless val = send(url_key)
+      return unless (val = send(url_key))
       val.to_slug.normalize.to_s
     end
 
