@@ -241,4 +241,31 @@ describe Mongoid::Urls do
       end
     end
   end
+
+  describe 'Dynamic' do
+    it 'should create' do
+      com = Company.create(name: 'ACME Corp LLC', nick: 'ACME')
+      expect(com.url).to eq 'acme'
+    end
+
+    it 'should create w/o one' do
+      com = Company.create(name: 'ACME Corp LLC')
+      expect(com.url).to eq 'acme-corp-llc'
+    end
+
+    it 'should assign attr' do
+      com = Company.new
+      com.assign_attributes(name: 'ACME Corp LLC', nick: 'ACME')
+      com.save
+      expect(com.url).to eq 'acme'
+      expect(Company.count).to eq 1
+    end
+
+    it 'should build up' do
+      com = Company.new
+      com.nick = 'ACME'
+      com.valid?
+      expect(com.url).to eq 'acme'
+    end
+  end
 end
