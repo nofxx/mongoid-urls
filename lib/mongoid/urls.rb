@@ -8,8 +8,8 @@ module Mongoid
     included do
       cattr_accessor :reserved_words,
                      :url_simple,
-                     :url_scope,
-                     :url_key
+                     # :url_scope,
+                     :url_keys
     end
 
     # Methods avaiable at the model
@@ -20,16 +20,24 @@ module Mongoid
       #  url :title
       #
       #  :simple    ->   Only one url per instance
-      #  :reserve   ->   Defaults to %w( new edit )
+      #  :reserve   ->   Defaults to %w( new edit ) + I18n.locales
       #
       def url(*args)
         options = args.extract_options!
-        fail 'One #url per model!' if url_key
-        self.url_key = args.first.to_s
+        fail 'One #url per model!' if url_keys
+        self.url_keys = args # .first.to_s
         self.url_simple = options[:simple]
-        self.reserved_words = options[:reserve] || Set.new(%w(new edit))
         create_url_fields
+        create_url_validations(options)
+      end
+
+      def create_url_validations(options)
         before_validation :create_urls
+        reserve = Set.new(%w(new edit)) + (options[:reserved] || [])
+        reserve << I18n.available_locales if Object.const_defined?('I18n')
+        self.reserved_words = reserve.flatten
+        validates :url, uniqueness: true, presence: true,
+                        format: { with: /[a-z\d-]+/ }
       end
 
       def find_url(u)
@@ -44,7 +52,9 @@ module Mongoid
       def create_url_fields
         field :url, type: String
         index({ url: 1 }, unique: true)
-        validates :url, uniqueness: true
+        define_method('url=') do |val|
+          self[:url] = val.to_slug.normalize.to_s
+        end
         return if url_simple
         field :urls, type: Array, default: []
         index(urls: 1)
@@ -56,27 +66,30 @@ module Mongoid
     end
 
     def new_url
-      return unless (val = send(url_key))
-      val.to_slug.normalize.to_s
+      url_keys.each do |key|
+        val = send(key)
+        next if val.blank?
+        url = val.to_slug.normalize.to_s
+        next if self.class.find_url(url)
+        return url
+      end
+      nil
     end
 
     protected
 
-    def validate_urls(u)
-      if reserved_words.include?(u)
-        errors.add(url_key, :reserved)
-      else
-        true
-      end
+    def validate_url(slug)
+      return unless reserved_words.include?(slug)
+      errors.add(:url, :reserved)
     end
 
     def create_urls
-      # return unless changes.include?(url_key)
-      validate_urls(new_url)
+      return unless (slug = new_url)
+      validate_url(slug)
 
-      self.url = new_url
+      self.url = slug
       return if url_simple
-      urls << new_url
+      urls << slug
       urls.uniq!
     end
   end # Urls

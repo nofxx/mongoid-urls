@@ -10,12 +10,14 @@ Mongoid::Urls
 ## Mongoid::Urls
 
 Simple slugs for mongoid models!
+Set the fields you want to try to make an URL out of,
+when impossible, use your logic or set the url directly.
 
 
 ## Nice URLs for Mongoid Documents
 
-This library is a quick and simple way to generate slugs
-for your mongoid documents.
+This library is a quick and simple way to generate URLs (slugs)
+for your Mongoid documents.
 
 Mongoid::Urls can help turn this:
 
@@ -36,13 +38,15 @@ In your Mongoid documents, just add `include Mongoid::Urls`
 and use the `url` method to setup, like so:
 
 ```ruby
-class Video
+class Company
   include Mongoid::Document
   include Mongoid::Urls
 
-  field :title
+  field :nickname
+  field :fullname
+  ...
 
-  url :title
+  url :nickname, :fullname, ...
 end
 
 ```

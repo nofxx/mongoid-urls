@@ -14,7 +14,7 @@ describe Mongoid::Urls do
   end
 
   let(:document) do
-    document_class.create(title: "I'm a Document!")
+    document_class.create(title: "I'm a Document!", doc: '123')
   end
 
   let(:article) do
@@ -42,6 +42,18 @@ describe Mongoid::Urls do
   end
 
   describe '#url' do
+    it 'should accept custom field names' do
+      document_class.send(:url, :doc)
+      expect(document).to have_field(:url)
+      expect(document).to have_field(:urls)
+    end
+
+    it 'should accept simple field names' do
+      document_class.send(:url, :title, simple: true)
+      expect(document).to_not have_field(:urls)
+      expect(document).to have_field(:url)
+    end
+
     describe 'default ":title"' do
       before(:each) { document_class.send(:url, :title) }
 
@@ -78,16 +90,6 @@ describe Mongoid::Urls do
     end
 
     describe 'index field' do
-      it 'should accept custom field names' do
-        document_class.send(:url, :doc)
-        expect(document).to have_field(:url)
-      end
-
-      it 'should accept simple field names' do
-        document_class.send(:url, :doc, simple: true)
-        expect(document).to_not have_field(:urls)
-        expect(document).to have_field(:url)
-      end
 
       it 'should create simple field to_param' do
         document_class.send(:field, :name)
@@ -178,18 +180,16 @@ describe Mongoid::Urls do
   end
 
   describe 'reserved words' do
-    before(:each) do
-    end
     it 'should respect default new' do
       article.title = 'new'
       expect(article.save).to be_falsey
-      expect(article.errors).to include(:title)
+      expect(article.errors).to include(:url)
     end
 
     it 'should respect default edit' do
       article.title = 'edit'
       expect(article.save).to be_falsey
-      expect(article.errors).to include(:title)
+      expect(article.errors).to include(:url)
     end
 
     it 'should match' do
@@ -221,8 +221,34 @@ describe Mongoid::Urls do
       it 'should raise when collisions can\'t be resolved on create!' do
         article.title = '1234'
         article.save
+        expect(article.reload.url).to eq '1234'
         dup = Article.create(title: '1234')
+        expect(dup.url).to be nil
         expect(dup.errors.messages).to_not be_empty
+      end
+
+      it 'should be possible to edit the url directly' do
+        article.title = '1234'
+        article.save
+        expect(article.reload.url).to eq '1234'
+        dup = Article.create(title: '1234')
+        expect(dup.url).to be nil
+        dup.url = 'onetwo'
+        dup.save
+        expect(dup.errors.messages).to be_empty
+        expect(dup.reload.url).to eq('onetwo')
+      end
+
+      it 'should be safe to edit the url directly' do
+        article.title = '1234'
+        article.save
+        expect(article.reload.url).to eq '1234'
+        dup = Article.create(title: '1234')
+        expect(dup.url).to be nil
+        dup.url = 'One Two'
+        dup.save
+        expect(dup.errors.messages).to be_empty
+        expect(dup.reload.url).to eq('one-two')
       end
     end
 
@@ -259,6 +285,29 @@ describe Mongoid::Urls do
       com.save
       expect(com.url).to eq 'acme'
       expect(Company.count).to eq 1
+    end
+
+    it 'should assign second attr when first is taken' do
+      com1 = Company.create!(name: 'ACME One', nick: 'ACME')
+      com2 = Company.create!(name: 'ACME Two', nick: 'ACME')
+      expect(com1.url).to eq 'acme'
+      expect(com2.url).to eq 'acme-two'
+    end
+
+    it 'should assign third attr when second is taken' do
+      com1 = Company.create!(name: 'Common Name', nick: 'ACME')
+      com2 = Company.create!(name: 'Common Name', nick: 'ACME')
+      com3 = Company.create!(name: 'Common Name', nick: 'ACME')
+      expect(com1.url).to eq 'acme'
+      expect(com2.url).to eq 'common-name'
+      expect(com3.url).to eq 'acme-common-name'
+    end
+
+    it 'should assign attr' do
+      com = Company.new
+      com.assign_attributes(name: 'ACME Corp LLC', nick: nil)
+      com.save
+      expect(com.url).to eq 'acme-corp-llc'
     end
 
     it 'should build up' do

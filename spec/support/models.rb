@@ -12,9 +12,11 @@ class Company
   include Mongoid::Urls
   field :name
   field :nick
-  url :nickname
 
-  def nickname
+  url :nick, :name, :fullname
+
+  def fullname
+    return nick + ' - ' + name if nick && name
     nick || name
   end
 end
