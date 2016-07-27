@@ -1,5 +1,4 @@
 require 'mongoid'
-require 'babosa'
 
 module Mongoid
   # Creates friendly urls for mongoid models!
@@ -24,7 +23,7 @@ module Mongoid
       #
       def url(*args)
         options = args.extract_options!
-        fail 'One #url per model!' if url_keys
+        raise 'Only one #url per model!' if url_keys
         self.url_keys = args # .first.to_s
         self.url_simple = options[:simple]
         create_url_fields
@@ -45,7 +44,8 @@ module Mongoid
       rescue Mongoid::Errors::DocumentNotFound
         nil
       end
-      alias_method :find_by_url, :find_url
+
+      alias find_by_url find_url
 
       private
 
@@ -53,7 +53,7 @@ module Mongoid
         field :url, type: String
         index({ url: 1 }, unique: true)
         define_method('url=') do |val|
-          self[:url] = val.to_slug.normalize.to_s
+          self[:url] = val.parameterize
         end
         return if url_simple
         field :urls, type: Array, default: []
@@ -69,7 +69,7 @@ module Mongoid
       url_keys.each do |key|
         val = send(key)
         next if val.blank?
-        url = val.to_slug.normalize.to_s
+        url = val.parameterize
         next if self.class.find_url(url)
         return url
       end

@@ -24,7 +24,7 @@ describe Mongoid::Urls do
   describe '#url' do
     before(:each) { document_class.send(:url, :title) }
     it 'should slugize a few stuff' do
-      expect(document.url).to eq('im-a-document')
+      expect(document.url).to eq('i-m-a-document')
     end
 
     it 'should update url' do
@@ -37,7 +37,7 @@ describe Mongoid::Urls do
       article.save
       article.title = 'Hello Ruby!'
       article.save
-      expect(article.urls).to eq ['im-an-article', 'hello-ruby']
+      expect(article.urls).to eq ['i-m-an-article', 'hello-ruby']
     end
   end
 
@@ -126,7 +126,7 @@ describe Mongoid::Urls do
 
       it 'should create the urls after being saved' do
         article.save
-        expect(article.urls).to eq ['im-an-article']
+        expect(article.urls).to eq ['i-m-an-article']
       end
     end
 
@@ -175,7 +175,7 @@ describe Mongoid::Urls do
   describe '.to_param' do
     it 'should respond with last valid url' do
       document_class.send(:url, :title)
-      expect(document.to_param).to eq 'im-a-document'
+      expect(document.to_param).to eq 'i-m-a-document'
     end
   end
 
