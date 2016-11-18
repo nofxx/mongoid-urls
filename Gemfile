@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'mongoid', '>=5.0.0.beta'
+gem 'mongoid', '>=6.0.0'
 
 gemspec
 
