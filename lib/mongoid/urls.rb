@@ -65,15 +65,17 @@ module Mongoid
       url
     end
 
+    # Gets a new url.
+    # Go each arg/key one by one, don't join'em.
     def new_url
       url_keys.each do |key|
-        val = send(key)
-        next if val.blank?
-        url = val.parameterize
-        next if self.class.find_url(url)
+        next if (val = send(key)).blank?
+        url = val.to_s.parameterize
+        if (dup = self.class.find_url(url))
+          next if dup.id != id
+        end
         return url
-      end
-      nil
+      end; nil
     end
 
     protected

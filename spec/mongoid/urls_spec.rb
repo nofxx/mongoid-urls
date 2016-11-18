@@ -7,14 +7,15 @@ describe Mongoid::Urls do
     class Document
       include Mongoid::Document
       include Mongoid::Urls
-      field :title
-      field :doc
+      field :title, type: String
+      field :doc,   type: String
+      field :ary,   type: Array
     end
     Class.new(Document)
   end
 
   let(:document) do
-    document_class.create(title: "I'm a Document!", doc: '123')
+    document_class.create(title: "I'm a Document!", doc: '123', ary: [1, 2])
   end
 
   let(:article) do
@@ -112,7 +113,7 @@ describe Mongoid::Urls do
       end
 
       it 'should change `to_param`' do
-        document_class.send(:url,  :title)
+        document_class.send(:url, :title)
         expect(document.to_param).to eq document.urls.first
       end
     end
@@ -301,6 +302,13 @@ describe Mongoid::Urls do
       expect(com1.url).to eq 'acme'
       expect(com2.url).to eq 'common-name'
       expect(com3.url).to eq 'acme-common-name'
+    end
+
+    it 'should keep on same on update' do
+      com = Company.create!(name: 'Common Name', nick: 'ACME')
+      expect(com.url).to eq 'acme'
+      com.update(name: 'Common Namex')
+      expect(com.url).to eq 'acme'
     end
 
     it 'should assign attr' do
